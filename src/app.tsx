@@ -3,28 +3,19 @@ import {
   BrowserRouter as Router,
   Switch,
   Route,
-  Link,
   Redirect
 } from 'react-router-dom';
 
 import LoginPage from './pages/login';
 import DashboardPage from './pages/dashboard';
 
+import CssBaseline from '@material-ui/core/CssBaseline';
+
 export default function App() {
   return (
-    <Router>
-      <div>
-        <nav>
-          <ul>
-            <li>
-              <Link to="/login">Login</Link>
-            </li>
-            <li>
-              <Link to="/dashboard">Dashboard</Link>
-            </li>
-          </ul>
-        </nav>
-
+    <>
+      <CssBaseline />
+      <Router>
         <Switch>
           <Route exact path="/">
             <Redirect to="/login"/>
@@ -36,7 +27,7 @@ export default function App() {
             <DashboardPage />
           </Route>
         </Switch>
-      </div>
-    </Router>
+      </Router>
+    </>
   );
 }
