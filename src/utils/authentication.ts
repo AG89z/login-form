@@ -20,11 +20,11 @@ const authentication$ = new BehaviorSubject<Authentication>({
 function mockAuthenticate() {
   if (Math.random() > 0.5) {
     // Success
-    return fetch('http://www.mocky.io/v2/5ec655353200007000d74ce5');
+    return fetch('https://www.mocky.io/v2/5ec655353200007000d74ce5');
   }
 
   // Error
-  return fetch('http://www.mocky.io/v2/5ec62c223200007900d74ae0');
+  return fetch('https://www.mocky.io/v2/5ec62c223200007900d74ae0');
 }
 
 export function useAuthentication() {
