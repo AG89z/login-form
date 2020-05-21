@@ -7,8 +7,8 @@ import {
 } from 'react-router-dom';
 
 import CssBaseline from '@material-ui/core/CssBaseline';
-import Backdrop from '@material-ui/core/Backdrop';
-import CircularProgress from '@material-ui/core/CircularProgress';
+
+import { PageLoader } from './components/PageLoader';
 
 import { useAuthentication } from './utils/authentication';
 import { delayLazy } from './utils/delayLazy';
@@ -19,14 +19,6 @@ const LoginPage = delayLazy(() => import('./pages/login'), delayReady);
 const DashboardPage = delayLazy(() => import('./pages/dashboard'), delayReady);
 const NotFoundPage = delayLazy(() => import('./pages/404'), delayReady);
 
-function Loader() {
-  return (
-    <Backdrop open invisible>
-      <CircularProgress />
-    </Backdrop>
-  );
-}
-
 export default function App() {
   const auth = useAuthentication();
 
@@ -34,7 +26,7 @@ export default function App() {
     <>
       <CssBaseline />
       <Router>
-        <Suspense fallback={<Loader />}>
+        <Suspense fallback={<PageLoader />}>
           <Switch>
             <Route exact path="/">
               <Redirect to="/login" />

@@ -56,6 +56,8 @@ export function useAuthentication() {
           errors: [body],
         });
       }
+
+      return authentication$.value;
     } catch (error) {
       // eslint-disable-next-line no-console
       console.log(error);
@@ -64,11 +66,13 @@ export function useAuthentication() {
         user: null,
         errors: [{ error: 'unexepted_error', message: 'Unexpected error' }],
       });
+      return authentication$.value;
     }
   };
 
   const logout = () => {
     authentication$.next({ authenticated: false, user: null, errors: [] });
+    return authentication$.value;
   };
 
   return Object.freeze({

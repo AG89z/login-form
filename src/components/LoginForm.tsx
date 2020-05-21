@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState } from 'react';
+
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
@@ -7,6 +8,8 @@ import Grid from '@material-ui/core/Grid';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import Container from '@material-ui/core/Container';
 import { makeStyles } from '@material-ui/core/styles';
 
 import { useAuthentication } from '../utils/authentication';
@@ -42,12 +45,28 @@ const useStyles = makeStyles((theme) => ({
     flexFlow: 'column',
     justifyContent: 'space-around',
   },
+  loader: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: theme.spacing(4),
+  },
 }));
 
 export function LoginForm() {
   const classes = useStyles();
+  const [loading, setLoading] = useState(false);
 
   const auth = useAuthentication();
+
+  const login = async () => {
+    setLoading(true);
+    const authentication = await auth.login();
+
+    if (!authentication.authenticated) {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className={classes.paper}>
@@ -82,7 +101,7 @@ export function LoginForm() {
               autoComplete="current-password"
             />
           </Grid>
-          {auth.authentication.errors.length > 0 && (
+          {auth.authentication.errors.length > 0 && !loading && (
             <Grid item xs={12}>
               <Paper elevation={3} className={classes.error}>
                 {auth.authentication.errors.map((error) => (
@@ -91,13 +110,20 @@ export function LoginForm() {
               </Paper>
             </Grid>
           )}
+          {loading && (
+            <Grid item xs={12}>
+              <Container className={classes.loader}>
+                <CircularProgress size={20} />
+              </Container>
+            </Grid>
+          )}
         </Grid>
         <Button
           fullWidth
           variant="contained"
           color="primary"
           className={classes.submit}
-          onClick={auth.login}
+          onClick={login}
         >
           Log in
         </Button>
