@@ -1,3 +1,6 @@
 Error handling
 Multi language
 username and password in mock authenticate (where to do validation?)
+code splitting on pages
+Return user from fetch
+Add testing
