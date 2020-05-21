@@ -49,6 +49,7 @@ export function useAuthentication(): [Authentication, () => void, () => void] {
         });
       }
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.log(error);
       authentication.next({
         authenticated: false,
@@ -63,3 +64,5 @@ export function useAuthentication(): [Authentication, () => void, () => void] {
 
   return [authenticated, login, logout];
 }
+
+export default useAuthentication;

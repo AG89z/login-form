@@ -6,7 +6,7 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 
-import LoginForm from '../components/LoginForm';
+import { LoginForm } from '../components/LoginForm';
 
 function Copyright() {
   return (
@@ -14,9 +14,8 @@ function Copyright() {
       {'Copyright © '}
       <Link color="inherit" href="https://github.com/ag89z/">
         Alberto Giachino
-      </Link>{' '}
-      {new Date().getFullYear()}
-      {'.'}
+      </Link>
+      {` ${new Date().getFullYear()}.`}
     </Typography>
   );
 }

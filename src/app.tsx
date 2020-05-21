@@ -6,11 +6,10 @@ import {
   Redirect,
 } from 'react-router-dom';
 
+import CssBaseline from '@material-ui/core/CssBaseline';
 import LoginPage from './pages/login';
 import DashboardPage from './pages/dashboard';
 import NotFoundPage from './pages/404';
-
-import CssBaseline from '@material-ui/core/CssBaseline';
 
 import { useAuthentication } from './utils/authentication';
 
