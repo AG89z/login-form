@@ -56,7 +56,7 @@ export default function DashboardPage() {
   const classes = useStyles();
   const theme = useTheme();
   const [mobileOpen, setMobileOpen] = React.useState(false);
-  const [authentication, login, logout] = useAuthentication();
+  const auth = useAuthentication();
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -79,7 +79,7 @@ export default function DashboardPage() {
           <ListItemText primary="Other tab" />
         </ListItem>
         <Divider />
-        <ListItem button onClick={logout}>
+        <ListItem button onClick={auth.logout}>
           <ListItemIcon>
             <LogoutIcon />
           </ListItemIcon>
@@ -139,6 +139,7 @@ export default function DashboardPage() {
       <main className={classes.content}>
         <div className={classes.toolbar} />
         <Typography variant="h4">Welcome back</Typography>
+        <Typography variant="h5">{`${auth.authentication.user?.name} ${auth.authentication.user?.surname}`}</Typography>
       </main>
     </div>
   );

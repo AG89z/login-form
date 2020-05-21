@@ -37,14 +37,17 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.error.main,
     color: theme.palette.error.contrastText,
     textAlign: 'center',
-    height: theme.spacing(4),
+    minHeight: theme.spacing(4),
+    display: 'flex',
+    flexFlow: 'column',
+    justifyContent: 'space-around',
   },
 }));
 
 export function LoginForm() {
   const classes = useStyles();
 
-  const [authenticated, login] = useAuthentication();
+  const auth = useAuthentication();
 
   return (
     <div className={classes.paper}>
@@ -79,10 +82,12 @@ export function LoginForm() {
               autoComplete="current-password"
             />
           </Grid>
-          {authenticated.error && (
+          {auth.authentication.errors.length > 0 && (
             <Grid item xs={12}>
               <Paper elevation={3} className={classes.error}>
-                {authenticated.error.message}
+                {auth.authentication.errors.map((error) => (
+                  <Typography key={error.error}>{error.message}</Typography>
+                ))}
               </Paper>
             </Grid>
           )}
@@ -92,7 +97,7 @@ export function LoginForm() {
           variant="contained"
           color="primary"
           className={classes.submit}
-          onClick={login}
+          onClick={auth.login}
         >
           Log in
         </Button>

@@ -14,7 +14,7 @@ import NotFoundPage from './pages/404';
 import { useAuthentication } from './utils/authentication';
 
 export default function App() {
-  const [authentication] = useAuthentication();
+  const auth = useAuthentication();
 
   return (
     <>
@@ -25,14 +25,14 @@ export default function App() {
             <Redirect to="/login" />
           </Route>
           <Route path="/login">
-            {authentication.authenticated ? (
+            {auth.authentication.authenticated ? (
               <Redirect to="/dashboard" />
             ) : (
               <LoginPage />
             )}
           </Route>
           <Route path="/dashboard">
-            {!authentication.authenticated ? (
+            {!auth.authentication.authenticated ? (
               <Redirect to="/login" />
             ) : (
               <DashboardPage />

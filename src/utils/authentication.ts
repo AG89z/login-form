@@ -1,34 +1,41 @@
 import { useState, useEffect } from 'react';
 
-import { Subject } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 
 interface Authentication {
-  authenticated: boolean;
-  error: { error: string; message: string } | false;
+  readonly authenticated: boolean;
+  readonly user: {
+    name: string;
+    surname: string;
+  } | null;
+  readonly errors: { error: string; message: string }[];
 }
 
-const authentication = new Subject<Authentication>();
+const authentication$ = new BehaviorSubject<Authentication>({
+  authenticated: false,
+  user: null,
+  errors: [],
+});
 
 function mockAuthenticate() {
   if (Math.random() > 0.5) {
     // Success
-    return fetch('http://www.mocky.io/v2/5ec62ee63200007000d74afd');
+    return fetch('http://www.mocky.io/v2/5ec655353200007000d74ce5');
   }
 
   // Error
   return fetch('http://www.mocky.io/v2/5ec62c223200007900d74ae0');
 }
 
-export function useAuthentication(): [Authentication, () => void, () => void] {
-  const [authenticated, setAuthenticated] = useState({
-    authenticated: false,
-    error: false,
-  } as Authentication);
+export function useAuthentication() {
+  const [authentication, setAuthentication] = useState(
+    authentication$.getValue()
+  );
 
   useEffect(() => {
-    const sub = authentication.subscribe({
-      next: (authenticationState) => {
-        setAuthenticated(authenticationState);
+    const sub = authentication$.subscribe({
+      next: (newAuthentication) => {
+        setAuthentication(newAuthentication);
       },
     });
     return () => sub.unsubscribe();
@@ -41,28 +48,34 @@ export function useAuthentication(): [Authentication, () => void, () => void] {
       const body = await res.json();
 
       if (res.ok) {
-        authentication.next({ authenticated: true, error: false });
+        authentication$.next({ authenticated: true, user: body, errors: [] });
       } else {
-        authentication.next({
+        authentication$.next({
           authenticated: false,
-          error: body,
+          user: null,
+          errors: [body],
         });
       }
     } catch (error) {
       // eslint-disable-next-line no-console
       console.log(error);
-      authentication.next({
+      authentication$.next({
         authenticated: false,
-        error: { error: 'unexepted_error', message: 'Unexpected error' },
+        user: null,
+        errors: [{ error: 'unexepted_error', message: 'Unexpected error' }],
       });
     }
   };
 
   const logout = () => {
-    authentication.next({ authenticated: false, error: false });
+    authentication$.next({ authenticated: false, user: null, errors: [] });
   };
 
-  return [authenticated, login, logout];
+  return Object.freeze({
+    authentication,
+    login,
+    logout,
+  });
 }
 
 export default useAuthentication;
