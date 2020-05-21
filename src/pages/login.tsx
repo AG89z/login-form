@@ -35,7 +35,7 @@ function LoginPage() {
   return (
     <div className={classes.container}>
       <Container maxWidth="xs">
-        <LoginForm/>
+        <LoginForm />
         <Box mt={5}>
           <Copyright />
         </Box>

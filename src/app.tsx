@@ -1,5 +1,10 @@
 import React from 'react';
-import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-dom';
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Redirect,
+} from 'react-router-dom';
 
 import LoginPage from './pages/login';
 import DashboardPage from './pages/dashboard';
@@ -11,7 +16,7 @@ import { useAuthentication } from './utils/authentication';
 
 export default function App() {
   const [authentication] = useAuthentication();
-  
+
   return (
     <>
       <CssBaseline />
@@ -21,10 +26,18 @@ export default function App() {
             <Redirect to="/login" />
           </Route>
           <Route path="/login">
-            {authentication.authenticated ? <Redirect to="/dashboard" /> : <LoginPage />}
+            {authentication.authenticated ? (
+              <Redirect to="/dashboard" />
+            ) : (
+              <LoginPage />
+            )}
           </Route>
           <Route path="/dashboard">
-            {!authentication.authenticated ? <Redirect to="/login" /> : <DashboardPage />}
+            {!authentication.authenticated ? (
+              <Redirect to="/login" />
+            ) : (
+              <DashboardPage />
+            )}
           </Route>
           <Route component={NotFoundPage} />
         </Switch>
