@@ -1,4 +1,4 @@
-import React, { lazy, Suspense } from 'react';
+import React, { Suspense } from 'react';
 import {
   BrowserRouter as Router,
   Switch,
@@ -10,20 +10,14 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import Backdrop from '@material-ui/core/Backdrop';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
-import { from } from 'rxjs';
-import { delay } from 'rxjs/operators';
 import { useAuthentication } from './utils/authentication';
+import { delayLazy } from './utils/delayLazy';
 
-function delayLazy<T extends React.ComponentType<any>>(
-  factory: () => Promise<{ default: T }>,
-  ms: number
-): React.LazyExoticComponent<T> {
-  return lazy(() => from(factory()).pipe(delay(ms)).toPromise());
-}
+const delayReady = 1000;
 
-const LoginPage = delayLazy(() => import('./pages/login'), 1000);
-const DashboardPage = delayLazy(() => import('./pages/dashboard'), 1000);
-const NotFoundPage = delayLazy(() => import('./pages/404'), 1000);
+const LoginPage = delayLazy(() => import('./pages/login'), delayReady);
+const DashboardPage = delayLazy(() => import('./pages/dashboard'), delayReady);
+const NotFoundPage = delayLazy(() => import('./pages/404'), delayReady);
 
 function Loader() {
   return (
