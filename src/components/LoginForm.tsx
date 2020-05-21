@@ -55,12 +55,14 @@ const useStyles = makeStyles((theme) => ({
 
 export function LoginForm() {
   const classes = useStyles();
+
   const [loading, setLoading] = useState(false);
 
   const auth = useAuthentication();
 
   const login = async () => {
     setLoading(true);
+
     const authentication = await auth.login();
 
     if (!authentication.authenticated) {
