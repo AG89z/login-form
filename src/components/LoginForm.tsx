@@ -82,7 +82,7 @@ export function LoginForm() {
           {authenticated.error && (
             <Grid item xs={12}>
               <Paper elevation={3} className={classes.error}>
-                {authenticated.error}
+                {authenticated.error.message}
               </Paper>
             </Grid>
           )}
