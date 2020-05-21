@@ -23,9 +23,9 @@ function NotFoundPage() {
         <div>
           <Typography component="h1" variant="h4" className={classes.text}>
             Page not found
-            <Typography component="h1" variant="h5" className={classes.text}>
-              404
-            </Typography>
+          </Typography>
+          <Typography component="h2" variant="h5" className={classes.text}>
+            404
           </Typography>
         </div>
       </Container>
