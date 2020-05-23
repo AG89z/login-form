@@ -116,14 +116,23 @@ export function LoginForm() {
       [field]: { ...prev[field], error: validator(value) },
     }));
 
-  const validateAndUpdateEmail = validateAndUpdate(
-    'email',
-    (email: string) => validateEmail(email)[0] || ''
-  );
+  const validateAndUpdateEmail = validateAndUpdate('email', (email: string) => {
+    const res = validateEmail(email);
+    if (res === true) {
+      return '';
+    }
+    return res.message;
+  });
 
   const validateAndUpdatePassword = validateAndUpdate(
     'password',
-    (password: string) => validatePassword(password)[0] || ''
+    (password: string) => {
+      const res = validatePassword(password);
+      if (res === true) {
+        return '';
+      }
+      return res.message;
+    }
   );
 
   const readyToSubmit = () => {

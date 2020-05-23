@@ -1,17 +1,34 @@
-export function validateEmail(email: string) {
-  const errors = [];
-  if (!email.match(/.+@.+\..+/)) {
-    errors.push('Bad email pattern');
-  }
-  return errors;
+export interface ValidationError {
+  error: string;
+  message: string;
 }
 
-export function validatePassword(password: string) {
-  const errors = [];
-  if (password.length < 5) {
-    errors.push('The password is too short');
+function nonEmpty(email: string) {
+  if (email.length > 0) {
+    return true;
   }
-  return errors;
+  return false;
+}
+
+export function validateEmail(email: string): true | ValidationError {
+  if (!nonEmpty(email)) {
+    return {
+      error: 'EMPTY_EMAIL_STRING',
+      message: 'The email field cannot be empty',
+    };
+  }
+
+  return true;
+}
+
+export function validatePassword(password: string): true | ValidationError {
+  if (password.length < 5) {
+    return {
+      error: 'PASSWORD_TOO_SHORT',
+      message: 'The password you provided is too short',
+    };
+  }
+  return true;
 }
 
 export default { validateEmail, validatePassword };
