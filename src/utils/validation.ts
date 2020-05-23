@@ -1,20 +1,27 @@
-export interface ValidationError {
+// INTERFACES
+
+interface ValidationError {
   error: string;
   message: string;
 }
 
+type MaybeValidationError = string | ValidationError;
+
 interface Validator {
-  (value: string | ValidationError): string | ValidationError;
+  (value: MaybeValidationError): MaybeValidationError;
 }
 
-function isError(value: string | ValidationError): value is ValidationError {
+interface ValidatorBuilder {
+  (validate: (value: string) => boolean, error: ValidationError): Validator;
+}
+
+// HELPERS
+
+function isError(value: MaybeValidationError): value is ValidationError {
   return (value as ValidationError).error !== undefined;
 }
 
-const makeValidator = (
-  validateFn: (email: string) => boolean,
-  error: ValidationError
-): Validator => (value) => {
+const makeValidator: ValidatorBuilder = (validateFn, error) => (value) => {
   if (isError(value)) {
     return value;
   }
@@ -26,6 +33,22 @@ const makeValidator = (
   return error;
 };
 
+const composeValidators = (...validators: Validator[]) => (
+  value: MaybeValidationError
+) => validators.reduce((res, validate) => validate(res), value);
+
+const makeValidate = (validators: Validator[]) => (value: string) => {
+  const maybeValid = composeValidators(...validators)(value);
+
+  if (!isError(maybeValid)) {
+    return true;
+  }
+
+  return maybeValid;
+};
+
+// EMAIL VALIDATORS
+
 const nonEmpty = makeValidator(
   (email) => {
     if (email.length > 0) {
@@ -34,8 +57,8 @@ const nonEmpty = makeValidator(
     return false;
   },
   {
-    error: 'EMPTY_EMAIL_STRING',
-    message: 'The email field cannot be empty',
+    error: 'EMPTY_FIELD',
+    message: 'The field cannot be empty',
   }
 );
 
@@ -52,28 +75,25 @@ const notTooLong = makeValidator(
   }
 );
 
-const composeValidators = (...validators: Validator[]) => (
-  value: string | ValidationError
-) => validators.reduce((res, validate) => validate(res), value);
+// PASSWORD VALIDATORS
 
-export function validateEmail(email: string): true | ValidationError {
-  const validEmail = composeValidators(nonEmpty, notTooLong)(email);
-
-  if (!isError(validEmail)) {
-    return true;
+const notTooShort = makeValidator(
+  (email) => {
+    if (email.length > 5) {
+      return true;
+    }
+    return false;
+  },
+  {
+    error: 'PASSWORD_TOO_SHORT',
+    message: 'The password you provided is too short',
   }
+);
 
-  return validEmail;
-}
+// EXPORTS
 
-export function validatePassword(password: string): true | ValidationError {
-  if (password.length < 5) {
-    return {
-      error: 'PASSWORD_TOO_SHORT',
-      message: 'The password you provided is too short',
-    };
-  }
-  return true;
-}
+export const validateEmail = makeValidate([nonEmpty, notTooLong]);
+
+export const validatePassword = makeValidate([nonEmpty, notTooShort]);
 
 export default { validateEmail, validatePassword };
