@@ -248,7 +248,8 @@ export function LoginForm() {
         </Button>
         <Grid container justify="flex-end">
           <Grid item>
-            <Link href="/login" variant="body2">
+            {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+            <Link href="#" variant="body2">
               Don&apos;t have an account yet? Sign up
             </Link>
           </Grid>
