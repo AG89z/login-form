@@ -13,6 +13,7 @@ import Container from '@material-ui/core/Container';
 import { makeStyles } from '@material-ui/core/styles';
 
 import { useAuthentication } from '../utils/authentication';
+import { validateEmail, validatePassword } from '../utils/validation';
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -32,6 +33,14 @@ const useStyles = makeStyles((theme) => ({
   form: {
     width: '100%',
     marginTop: theme.spacing(3),
+  },
+  field: {
+    '& .MuiOutlinedInput-root': {
+      '& fieldset': {
+        borderColor: theme.palette.success.main,
+        borderWidth: '2px',
+      },
+    },
   },
   submit: {
     margin: theme.spacing(3, 0, 2),
@@ -53,17 +62,92 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+interface FormData {
+  email: {
+    email: string;
+    error: string;
+    visited: boolean;
+  };
+  password: {
+    password: string;
+    error: string;
+    visited: boolean;
+  };
+}
+
 export function LoginForm() {
+  const auth = useAuthentication();
+
   const classes = useStyles();
 
   const [loading, setLoading] = useState(false);
 
-  const auth = useAuthentication();
+  const [formData, setFormData] = useState({
+    email: {
+      email: '',
+      error: '',
+      visited: false,
+    },
+    password: {
+      password: '',
+      error: '',
+      visited: false,
+    },
+  } as FormData);
 
-  const login = async () => {
+  const onEmailChange = (email: string) =>
+    setFormData((prev) => ({
+      ...prev,
+      email: { ...prev.email, visited: true, email },
+    }));
+
+  const onPasswordChange = (password: string) =>
+    setFormData((prev) => ({
+      ...prev,
+      password: { ...prev.password, visited: true, password },
+    }));
+
+  const validateAndUpdate = (
+    field: 'email' | 'password',
+    validator: (value: string) => string
+  ) => (value: string) =>
+    setFormData((prev) => ({
+      ...prev,
+      [field]: { ...prev[field], error: validator(value) },
+    }));
+
+  const validateAndUpdateEmail = validateAndUpdate(
+    'email',
+    (email: string) => validateEmail(email)[0] || ''
+  );
+
+  const validateAndUpdatePassword = validateAndUpdate(
+    'password',
+    (password: string) => validatePassword(password)[0] || ''
+  );
+
+  const readyToSubmit = () => {
+    return (
+      formData.email.visited &&
+      !formData.email.error &&
+      formData.password.visited &&
+      !formData.password.error
+    );
+  };
+
+  const onSubmit = async () => {
+    if (!readyToSubmit()) {
+      validateAndUpdateEmail(formData.email.email);
+      validateAndUpdatePassword(formData.password.password);
+      return;
+    }
+
     setLoading(true);
 
-    const authentication = await auth.login();
+    const authentication = await auth.login(
+      formData.email.email,
+      formData.password.password
+    );
 
     if (!authentication.authenticated) {
       setLoading(false);
@@ -78,7 +162,7 @@ export function LoginForm() {
       <Typography component="h1" variant="h5">
         Log in
       </Typography>
-      <form className={classes.form}>
+      <form className={classes.form} noValidate>
         <Grid container spacing={2}>
           <Grid item xs={12}>
             <TextField
@@ -89,6 +173,18 @@ export function LoginForm() {
               label="Email Address"
               name="email"
               autoComplete="email"
+              value={formData.email.email}
+              error={Boolean(formData.email.error)}
+              classes={
+                (!formData.email.error &&
+                  formData.email.visited && {
+                    root: classes.field,
+                  }) ||
+                undefined
+              }
+              helperText={formData.email.error}
+              onChange={(e) => onEmailChange(e.target.value)}
+              onBlur={(e) => validateAndUpdateEmail(e.target.value)}
             />
           </Grid>
           <Grid item xs={12}>
@@ -101,6 +197,18 @@ export function LoginForm() {
               type="password"
               id="password"
               autoComplete="current-password"
+              value={formData.password.password}
+              error={Boolean(formData.password.error)}
+              classes={
+                (!formData.password.error &&
+                  formData.password.visited && {
+                    root: classes.field,
+                  }) ||
+                undefined
+              }
+              helperText={formData.password.error}
+              onChange={(e) => onPasswordChange(e.target.value)}
+              onBlur={(e) => validateAndUpdatePassword(e.target.value)}
             />
           </Grid>
           {auth.authentication.errors.length > 0 && !loading && (
@@ -125,7 +233,7 @@ export function LoginForm() {
           variant="contained"
           color="primary"
           className={classes.submit}
-          onClick={login}
+          onClick={onSubmit}
         >
           Log in
         </Button>

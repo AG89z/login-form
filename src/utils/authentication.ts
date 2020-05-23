@@ -17,7 +17,8 @@ const authentication$ = new BehaviorSubject<Authentication>({
   errors: [],
 });
 
-function mockAuthenticate() {
+// eslint-disable-next-line no-unused-vars
+function mockAuthenticate(_email: string, _password: string) {
   if (Math.random() > 0.5) {
     // Success
     return fetch('https://www.mocky.io/v2/5ec655353200007000d74ce5');
@@ -41,9 +42,9 @@ export function useAuthentication() {
     return () => sub.unsubscribe();
   }, []);
 
-  const login = async () => {
+  const login = async (email: string, password: string) => {
     try {
-      const res = await mockAuthenticate();
+      const res = await mockAuthenticate(email, password);
 
       const body = await res.json();
 
