@@ -11,13 +11,13 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import { PageLoader } from './components/PageLoader';
 
 import { useAuthentication } from './utils/authentication';
-import { delayLazy } from './utils/delayLazy';
+import { lazyAfter } from './utils/lazyAfter';
 
 const delayReady = 1000;
 
-const LoginPage = delayLazy(() => import('./pages/login'), delayReady);
-const DashboardPage = delayLazy(() => import('./pages/dashboard'), delayReady);
-const NotFoundPage = delayLazy(() => import('./pages/404'), delayReady);
+const LoginPage = lazyAfter(() => import('./pages/login'), delayReady);
+const DashboardPage = lazyAfter(() => import('./pages/dashboard'), delayReady);
+const NotFoundPage = lazyAfter(() => import('./pages/404'), delayReady);
 
 export default function App() {
   const auth = useAuthentication();

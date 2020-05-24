@@ -37,7 +37,7 @@ const composeValidators = (...validators: Validator[]) => (
   value: MaybeValidationError
 ) => validators.reduce((res, validate) => validate(res), value);
 
-const makeValidate = (validators: Validator[]) => (value: string) => {
+const makeValidationFunction = (validators: Validator[]) => (value: string) => {
   const maybeValid = composeValidators(...validators)(value);
 
   if (!isError(maybeValid)) {
@@ -80,7 +80,7 @@ const accountIsNotTooLong = makeValidator(
   },
   {
     error: 'ACCOUNT_TOO_LONG',
-    message: 'The part before @ should have less than 64 charatcers',
+    message: 'The part before @ should have less than 64 characters',
   }
 );
 
@@ -91,7 +91,7 @@ const domainPartIsCorrect = makeValidator(
   {
     error: 'INVALID_DOMAIN',
     message:
-      'The domain parts within dots (.) should have less than 64 charatcers',
+      'The domain parts within dots (.) should have less than 64 characters',
   }
 );
 
@@ -117,7 +117,11 @@ const notTooShort = makeValidator((email) => email.length >= 5, {
 
 // EXPORTS
 
-export const validateEmail = makeValidate([
+/**
+ * Returns true if the email is valid,
+ * otherwise returns the first found validation error
+ */
+export const validateEmail = makeValidationFunction([
   isNonEmpty,
   isASCII,
   isNotTooLong,
@@ -127,6 +131,13 @@ export const validateEmail = makeValidate([
   adheresToSuperRegex,
 ]);
 
-export const validatePassword = makeValidate([isNonEmpty, notTooShort]);
+/**
+ * Returns true if the password is valid,
+ * otherwise returns the first found validation error
+ */
+export const validatePassword = makeValidationFunction([
+  isNonEmpty,
+  notTooShort,
+]);
 
 export default { validateEmail, validatePassword };

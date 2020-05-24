@@ -53,10 +53,12 @@ const useStyles = makeStyles((theme) =>
 );
 
 export default function DashboardPage() {
+  const auth = useAuthentication();
+
   const classes = useStyles();
   const theme = useTheme();
+
   const [mobileOpen, setMobileOpen] = useState(false);
-  const auth = useAuthentication();
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);

@@ -8,7 +8,7 @@ import { from, timer, combineLatest } from 'rxjs';
  * @param factory The React.lazy callback
  * @param ms The minimum time in milliseconds for React.lazy to complete
  */
-export function delayLazy<T extends React.ComponentType<any>>(
+export function lazyAfter<T extends React.ComponentType<any>>(
   factory: () => Promise<{ default: T }>,
   ms = 1000
 ): React.LazyExoticComponent<T> {
@@ -17,4 +17,4 @@ export function delayLazy<T extends React.ComponentType<any>>(
   );
 }
 
-export default delayLazy;
+export default lazyAfter;

@@ -26,7 +26,8 @@ function ErrorScreen() {
       <Container maxWidth="xs">
         <ErrorIcon className={classes.errorIcon} />
         <Typography variant="h5">
-          An unexpected error occured: please reload the page
+          An unexpected error occurred: please reload the page or contact the
+          page administrator
         </Typography>
       </Container>
     </div>

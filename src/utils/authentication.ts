@@ -2,21 +2,10 @@ import { useState, useEffect } from 'react';
 
 import { BehaviorSubject } from 'rxjs';
 
-interface Authentication {
-  readonly authenticated: boolean;
-  readonly user: {
-    name: string;
-    surname: string;
-  } | null;
-  readonly errors: { error: string; message: string }[];
-}
-
-const authentication$ = new BehaviorSubject<Authentication>({
-  authenticated: false,
-  user: null,
-  errors: [],
-});
-
+/**
+ * Simple function to mock a login request.
+ * Returns an error with 50% probability.
+ */
 // eslint-disable-next-line no-unused-vars
 function mockAuthenticate(_email: string, _password: string) {
   if (Math.random() > 0.5) {
@@ -28,12 +17,41 @@ function mockAuthenticate(_email: string, _password: string) {
   return fetch('https://www.mocky.io/v2/5ec62c223200007900d74ae0');
 }
 
+/**
+ * The authentication state that will be made available
+ * to the application via the custom hook useAuthentication()
+ */
+interface Authentication {
+  readonly authenticated: boolean;
+  readonly user: {
+    name: string;
+    surname: string;
+  } | null;
+  readonly errors: { error: string; message: string }[];
+}
+
+/**
+ * This observable will be responsible to maintain the
+ * authentication state throughout the application
+ */
+const authentication$ = new BehaviorSubject<Authentication>({
+  authenticated: false,
+  user: null,
+  errors: [],
+});
+
+/**
+ * Custom hook for retrieving the authentication state
+ * and handling login and logout requests
+ */
 export function useAuthentication() {
   const [authentication, setAuthentication] = useState(
     authentication$.getValue()
   );
 
   useEffect(() => {
+    // Synchronize the local authentication state with
+    // the global authentication observable
     const sub = authentication$.subscribe({
       next: (newAuthentication) => {
         setAuthentication(newAuthentication);
@@ -65,7 +83,7 @@ export function useAuthentication() {
       authentication$.next({
         authenticated: false,
         user: null,
-        errors: [{ error: 'unexepted_error', message: 'Unexpected error' }],
+        errors: [{ error: 'UNEXPECTED_ERROR', message: 'Unexpected error' }],
       });
       return authentication$.value;
     }
@@ -77,7 +95,9 @@ export function useAuthentication() {
   };
 
   return Object.freeze({
-    authentication,
+    get authentication() {
+      return authentication;
+    },
     login,
     logout,
   });

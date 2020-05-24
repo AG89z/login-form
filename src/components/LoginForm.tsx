@@ -250,7 +250,7 @@ export function LoginForm() {
           <Grid item>
             {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
             <Link href="#" variant="body2">
-              Don&apos;t have an account yet? Sign up
+              `Don&apos;t have an account yet? Sign up`
             </Link>
           </Grid>
         </Grid>
