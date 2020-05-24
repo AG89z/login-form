@@ -66,7 +66,7 @@ const isNotTooLong = makeValidator((email) => email.length <= 256, {
 });
 
 const followsBasicPattern = makeValidator(
-  (email) => /^([^\s@.]+\.?)*[^\s@.]+@([^\s@.]+\.?)*[^\s@.]+\s*$/.test(email),
+  (email) => /^([^\s@.]+\.)*[^\s@.]+@([^\s@.]+\.)*[^\s@.]+\s*$/.test(email),
   {
     error: 'IRREGULAR_PATTERN',
     message: 'Are you sure you typed a correct email address?',
@@ -86,7 +86,8 @@ const accountIsNotTooLong = makeValidator(
 
 const domainPartIsCorrect = makeValidator(
   (email) => {
-    return email.split('.').every((part) => part.length <= 64);
+    const domain = email.split('@')[1];
+    return domain.split('.').every((part) => part.length <= 64);
   },
   {
     error: 'INVALID_DOMAIN',
