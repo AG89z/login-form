@@ -50,5 +50,10 @@
     "react-dom": "^16.13.1",
     "react-router-dom": "^5.2.0",
     "rxjs": "^6.5.5"
+  },
+  "husky": {
+    "hooks": {
+      "pre-push": "npm run lint && npm test"
+    }
   }
 }
