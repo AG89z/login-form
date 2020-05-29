@@ -95,19 +95,19 @@ export function LoginForm() {
     },
   } as FormData);
 
-  const onEmailChange = (email: string) =>
+  const updateEmail = (email: string) =>
     setFormData((prev) => ({
       ...prev,
       email: { ...prev.email, visited: true, email },
     }));
 
-  const onPasswordChange = (password: string) =>
+  const updatePassword = (password: string) =>
     setFormData((prev) => ({
       ...prev,
       password: { ...prev.password, visited: true, password },
     }));
 
-  const validateAndUpdate = (
+  const makeValidateAndUpdateFn = (
     field: 'email' | 'password',
     validator: (value: string) => string
   ) => (value: string) =>
@@ -116,15 +116,18 @@ export function LoginForm() {
       [field]: { ...prev[field], error: validator(value) },
     }));
 
-  const validateAndUpdateEmail = validateAndUpdate('email', (email: string) => {
-    const res = validateEmail(email);
-    if (res === true) {
-      return '';
+  const validateAndUpdateEmail = makeValidateAndUpdateFn(
+    'email',
+    (email: string) => {
+      const res = validateEmail(email);
+      if (res === true) {
+        return '';
+      }
+      return res.message;
     }
-    return res.message;
-  });
+  );
 
-  const validateAndUpdatePassword = validateAndUpdate(
+  const validateAndUpdatePassword = makeValidateAndUpdateFn(
     'password',
     (password: string) => {
       const res = validatePassword(password);
@@ -192,7 +195,7 @@ export function LoginForm() {
                 undefined
               }
               helperText={formData.email.error}
-              onChange={(e) => onEmailChange(e.target.value)}
+              onChange={(e) => updateEmail(e.target.value)}
               onBlur={(e) => validateAndUpdateEmail(e.target.value)}
             />
           </Grid>
@@ -216,7 +219,7 @@ export function LoginForm() {
                 undefined
               }
               helperText={formData.password.error}
-              onChange={(e) => onPasswordChange(e.target.value)}
+              onChange={(e) => updatePassword(e.target.value)}
               onBlur={(e) => validateAndUpdatePassword(e.target.value)}
             />
           </Grid>

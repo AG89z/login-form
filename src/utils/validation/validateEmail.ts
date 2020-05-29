@@ -1,57 +1,8 @@
-// INTERFACES
-
-interface ValidationError {
-  error: string;
-  message: string;
-}
-
-type MaybeValidationError = string | ValidationError;
-
-interface Validator {
-  (value: MaybeValidationError): MaybeValidationError;
-}
-
-interface ValidatorBuilder {
-  (validate: (value: string) => boolean, error: ValidationError): Validator;
-}
-
-// HELPERS
-
-function isError(value: MaybeValidationError): value is ValidationError {
-  return (value as ValidationError).error !== undefined;
-}
-
-const makeValidator: ValidatorBuilder = (validateFn, error) => (value) => {
-  if (isError(value)) {
-    return value;
-  }
-
-  if (validateFn(value)) {
-    return value;
-  }
-
-  return error;
-};
-
-const composeValidators = (...validators: Validator[]) => (
-  value: MaybeValidationError
-) => validators.reduce((res, validate) => validate(res), value);
-
-const makeValidationFunction = (validators: Validator[]) => (value: string) => {
-  const maybeValid = composeValidators(...validators)(value);
-
-  if (!isError(maybeValid)) {
-    return true;
-  }
-
-  return maybeValid;
-};
-
-// EMAIL VALIDATORS
+import { makeValidator, makeValidationFunction } from './helpers';
 
 const isNonEmpty = makeValidator((email) => email.length > 0, {
   error: 'EMPTY_FIELD',
-  message: 'The field cannot be empty',
+  message: 'The email field cannot be empty',
 });
 
 // eslint-disable-next-line no-control-regex
@@ -109,15 +60,6 @@ const adheresToSuperRegex = makeValidator(
   }
 );
 
-// PASSWORD VALIDATORS
-
-const notTooShort = makeValidator((email) => email.length >= 5, {
-  error: 'PASSWORD_TOO_SHORT',
-  message: 'The password should have at least 5 characters',
-});
-
-// EXPORTS
-
 /**
  * Returns true if the email is valid,
  * otherwise returns the first found validation error
@@ -132,13 +74,4 @@ export const validateEmail = makeValidationFunction([
   adheresToSuperRegex,
 ]);
 
-/**
- * Returns true if the password is valid,
- * otherwise returns the first found validation error
- */
-export const validatePassword = makeValidationFunction([
-  isNonEmpty,
-  notTooShort,
-]);
-
-export default { validateEmail, validatePassword };
+export default validateEmail;
